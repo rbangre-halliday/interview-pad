@@ -33,3 +33,78 @@
 .editor-container .monaco-editor .scrollbar .slider:hover {
   background: var(--text-muted) !important;
 }
+
+/* ============================================
+   REMOTE CURSOR STYLES - Subtle & Integrated
+   ============================================ */
+
+/* The cursor line indicator - thin vertical bar */
+.remote-cursor-line {
+  position: relative;
+}
+
+.remote-cursor-line::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--cursor-color, #6366f1);
+  border-radius: 1px;
+  animation: cursor-pulse 1s ease-in-out infinite;
+}
+
+/* Active cursor pulses gently */
+.remote-cursor.active .remote-cursor-line::before {
+  animation: cursor-pulse 1s ease-in-out infinite;
+}
+
+/* Idle cursor is more subtle */
+.remote-cursor.idle .remote-cursor-line::before {
+  opacity: 0.5;
+  animation: none;
+}
+
+@keyframes cursor-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Very subtle line highlight - almost invisible tint */
+.remote-cursor-line-highlight {
+  background: var(--cursor-color, #6366f1);
+  opacity: 0.04;
+}
+
+/* ============================================
+   HOVER TOOLTIP - Shows name on mouse near cursor
+   ============================================ */
+
+.cursor-name-tooltip {
+  padding: 4px 8px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--cursor-color, #6366f1);
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: tooltip-appear 0.15s ease-out;
+  z-index: 100;
+}
+
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

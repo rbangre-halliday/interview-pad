@@ -1,0 +1,66 @@
+.user-presence {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatars {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  border: 2px solid var(--bg-surface);
+  margin-left: -8px;
+  cursor: default;
+  transition: transform var(--transition-fast);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.user-avatar:first-child {
+  margin-left: 0;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+  z-index: 100 !important;
+}
+
+.user-avatar.is-you {
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.user-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Pulse animation for new user joining */
+@keyframes user-join {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.user-avatar {
+  animation: user-join 0.3s ease-out;
+}

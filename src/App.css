@@ -45,11 +45,40 @@
   background: var(--bg-void);
 }
 
+.resize-handle {
+  height: 6px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  cursor: ns-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+}
+
+.resize-handle::after {
+  content: '';
+  width: 40px;
+  height: 3px;
+  background: var(--border-default);
+  border-radius: 2px;
+  transition: background var(--transition-fast);
+}
+
+.resize-handle:hover {
+  background: var(--bg-hover);
+}
+
+.resize-handle:hover::after {
+  background: var(--text-muted);
+}
+
 .output-area {
-  height: 200px;
   min-height: 100px;
+  max-height: 500px;
   border-top: 1px solid var(--border-default);
   background: var(--bg-surface);
+  flex-shrink: 0;
 }
 
 .empty-state {

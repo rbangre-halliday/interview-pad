@@ -10,6 +10,31 @@ export interface FileInfo {
   language?: string
 }
 
+export interface User {
+  id: number
+  name: string
+  color: string
+  role: 'interviewer' | 'candidate'
+}
+
+const ROLE_COLORS: Record<string, string> = {
+  interviewer: '#6366f1', // indigo
+  candidate: '#10b981',   // emerald
+}
+
+const FALLBACK_COLORS = [
+  '#f43f5e', // rose
+  '#22d3ee', // cyan
+  '#f59e0b', // amber
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#14b8a6', // teal
+]
+
+function get_color_for_role(role: string): string {
+  return ROLE_COLORS[role] || FALLBACK_COLORS[Math.floor(Math.random() * FALLBACK_COLORS.length)]
+}
+
 const DEFAULT_README = `# Interview Problem
 
 ## Description
@@ -71,11 +96,13 @@ export function get_piston_language(filename: string): { name: string; version: 
   return map[ext || ''] || null
 }
 
-export function useFileSystem(room_id: string) {
+export function useFileSystem(room_id: string, user_name: string, user_role: 'interviewer' | 'candidate') {
   const [files, set_files] = useState<FileInfo[]>([])
   const [synced, set_synced] = useState(false)
   const [output, set_output_state] = useState<string | null>(null)
   const [provider, set_provider] = useState<YPartyKitProvider | null>(null)
+  const [users, set_users] = useState<User[]>([])
+  const [current_user, set_current_user] = useState<User | null>(null)
   const [, force_update] = useState(0)
 
   const doc_ref = useRef<Y.Doc | null>(null)
@@ -88,6 +115,53 @@ export function useFileSystem(room_id: string) {
     const provider_instance = new YPartyKitProvider(PARTYKIT_HOST, room_id, doc)
     provider_ref.current = provider_instance
     set_provider(provider_instance)
+
+    // Set up awareness for user presence
+    const awareness = provider_instance.awareness
+    const user_color = get_color_for_role(user_role)
+
+    // Set local user state with actual name and role
+    awareness.setLocalStateField('user', {
+      name: user_name,
+      role: user_role,
+      color: user_color,
+    })
+
+    // Track connected users
+    const update_users = () => {
+      const states = awareness.getStates()
+      const connected_users: User[] = []
+
+      states.forEach((state, client_id) => {
+        if (state.user) {
+          connected_users.push({
+            id: client_id,
+            name: state.user.name || 'Anonymous',
+            color: state.user.color || get_color_for_role(state.user.role || 'candidate'),
+            role: state.user.role || 'candidate',
+          })
+        }
+      })
+
+      // Sort: interviewers first, then by client ID
+      connected_users.sort((a, b) => {
+        if (a.role !== b.role) {
+          return a.role === 'interviewer' ? -1 : 1
+        }
+        return a.id - b.id
+      })
+
+      set_users(connected_users)
+
+      // Update current user
+      const me = connected_users.find(u => u.id === awareness.clientID)
+      if (me) {
+        set_current_user(me)
+      }
+    }
+
+    awareness.on('change', update_users)
+    update_users()
 
     // Single shared text for the entire editor content
     // We'll use a Y.Map to track which file is active and store file list
@@ -140,6 +214,7 @@ export function useFileSystem(room_id: string) {
     })
 
     return () => {
+      awareness.off('change', update_users)
       provider_instance.destroy()
       doc.destroy()
     }
@@ -212,6 +287,8 @@ export function useFileSystem(room_id: string) {
     synced,
     output,
     provider,
+    users,
+    current_user,
     get_file_content,
     create_file,
     delete_file,
