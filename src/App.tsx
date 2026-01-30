@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import FileExplorer from './components/FileExplorer'
+import TabBar from './components/TabBar'
 import Editor from './components/Editor'
+import MarkdownEditor from './components/MarkdownEditor'
 import OutputPanel from './components/OutputPanel'
 import Toolbar from './components/Toolbar'
-import { Language, LANGUAGES } from './lib/languages'
-import { useYjs } from './hooks/useYjs'
+import { useFileSystem, get_piston_language } from './hooks/useFileSystem'
 import { executeCode, ExecutionResult } from './lib/piston'
 import './App.css'
 
@@ -16,29 +18,76 @@ function get_room_id(): string {
 }
 
 export default function App() {
-  const [is_running, set_is_running] = useState(false)
   const room_id = get_room_id()
-  const { ytext, provider, synced, shared_state, set_language_id, set_output } = useYjs(room_id)
+  const {
+    files,
+    synced,
+    output,
+    provider,
+    get_file_content,
+    create_file,
+    delete_file,
+    set_output,
+  } = useFileSystem(room_id)
+
+  const [open_files, set_open_files] = useState<string[]>([])
+  const [active_file, set_active_file] = useState<string | null>(null)
+  const [is_running, set_is_running] = useState(false)
   const get_code_ref = useRef<(() => string) | null>(null)
 
-  const language = LANGUAGES.find(l => l.id === shared_state.language_id) || LANGUAGES[0]
-  const output: ExecutionResult | null = shared_state.output ? JSON.parse(shared_state.output) : null
+  const active_file_info = files.find(f => f.name === active_file)
+  const active_ytext = active_file ? get_file_content(active_file) : null
+  const piston_lang = active_file ? get_piston_language(active_file) : null
+  const can_run = !!piston_lang && active_file_info?.type === 'code'
 
-  useEffect(() => {
-    if (synced && ytext && ytext.length === 0) {
-      ytext.insert(0, language.template)
+  const parsed_output: ExecutionResult | null = output ? JSON.parse(output) : null
+
+  const handle_file_select = useCallback((filename: string) => {
+    if (!open_files.includes(filename)) {
+      set_open_files(prev => [...prev, filename])
     }
-  }, [synced, ytext])
+    set_active_file(filename)
+  }, [open_files])
 
-  const handle_language_change = (lang: Language) => {
-    set_language_id(lang.id)
-  }
+  const handle_file_create = useCallback((filename: string) => {
+    create_file(filename)
+    // Auto-open the new file
+    set_open_files(prev => [...prev, filename])
+    set_active_file(filename)
+  }, [create_file])
 
-  const handle_run = async (code: string) => {
+  const handle_file_delete = useCallback((filename: string) => {
+    delete_file(filename)
+    // Close tab if open
+    set_open_files(prev => prev.filter(f => f !== filename))
+    if (active_file === filename) {
+      const remaining = open_files.filter(f => f !== filename)
+      set_active_file(remaining[0] || null)
+    }
+  }, [delete_file, active_file, open_files])
+
+  const handle_tab_close = useCallback((filename: string) => {
+    set_open_files(prev => {
+      const remaining = prev.filter(f => f !== filename)
+      if (active_file === filename) {
+        const idx = prev.indexOf(filename)
+        const new_active = remaining[Math.max(0, idx - 1)] || null
+        set_active_file(new_active)
+      }
+      return remaining
+    })
+  }, [active_file])
+
+  const handle_run = async () => {
+    if (!piston_lang || !get_code_ref.current) return
+    const code = get_code_ref.current()
+    if (!code) return
+
     set_is_running(true)
     set_output(null)
+
     try {
-      const result = await executeCode(code, language.piston_name, language.piston_version)
+      const result = await executeCode(code, piston_lang.name, piston_lang.version)
       set_output(JSON.stringify(result))
     } catch (err) {
       set_output(JSON.stringify({
@@ -54,26 +103,71 @@ export default function App() {
     }
   }
 
+  const render_editor = () => {
+    if (!active_file || !active_ytext) {
+      return (
+        <div className="empty-state">
+          <p>Select a file to edit</p>
+        </div>
+      )
+    }
+
+    if (active_file_info?.type === 'markdown') {
+      return (
+        <MarkdownEditor
+          key={active_file}
+          ytext={active_ytext}
+          provider={provider}
+          synced={synced}
+        />
+      )
+    }
+
+    return (
+      <Editor
+        key={active_file}
+        ytext={active_ytext}
+        provider={provider}
+        synced={synced}
+        language={active_file_info?.language || 'plaintext'}
+        on_editor_ready={(get_code) => { get_code_ref.current = get_code }}
+      />
+    )
+  }
+
   return (
     <div className="app">
       <Toolbar
-        language={language}
-        on_language_change={handle_language_change}
-        on_run={handle_run}
-        is_running={is_running}
         room_id={room_id}
-        ytext={ytext}
-        get_code={() => get_code_ref.current?.() || ''}
+        active_file={active_file}
+        can_run={can_run}
+        is_running={is_running}
+        on_run={handle_run}
       />
-      <div className="main">
-        <Editor
-          language={language}
-          ytext={ytext}
-          provider={provider}
-          synced={synced}
-          on_editor_ready={(get_code) => { get_code_ref.current = get_code }}
+      <div className="main-container">
+        <FileExplorer
+          files={files}
+          active_file={active_file}
+          on_file_select={handle_file_select}
+          on_file_create={handle_file_create}
+          on_file_delete={handle_file_delete}
         />
-        <OutputPanel result={output} is_running={is_running} />
+        <div className="editor-area">
+          <TabBar
+            open_files={open_files}
+            active_file={active_file}
+            on_tab_select={set_active_file}
+            on_tab_close={handle_tab_close}
+          />
+          <div className="editor-content">
+            {render_editor()}
+          </div>
+          {can_run && (
+            <div className="output-area">
+              <OutputPanel result={parsed_output} is_running={is_running} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

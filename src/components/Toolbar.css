@@ -33,6 +33,14 @@
   gap: 12px;
 }
 
+.toolbar-file {
+  font-size: 13px;
+  color: #888;
+  padding: 4px 10px;
+  background: #1e1e1e;
+  border-radius: 4px;
+}
+
 .toolbar-select {
   padding: 8px 12px;
   border-radius: 6px;

@@ -1,37 +1,39 @@
 .output-panel {
-  width: 400px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  background: #252526;
+  background: #1e1e1e;
 }
 
 .output-header {
-  padding: 12px 16px;
+  padding: 8px 16px;
+  font-size: 11px;
   font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: #888;
+  text-transform: uppercase;
+  background: #252526;
   border-bottom: 1px solid #333;
-  color: #ccc;
 }
 
 .output-body {
   flex: 1;
-  padding: 16px;
+  padding: 12px 16px;
   overflow: auto;
 }
 
 .output-message {
   color: #888;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .output-status {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  margin-bottom: 12px;
-  padding: 8px 12px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
   border-radius: 4px;
+  display: inline-block;
 }
 
 .output-status.success {
@@ -56,11 +58,5 @@
   white-space: pre-wrap;
   word-break: break-word;
   margin: 0;
-}
-
-@media (max-width: 900px) {
-  .output-panel {
-    width: 100%;
-    height: 40%;
-  }
+  color: #d4d4d4;
 }
