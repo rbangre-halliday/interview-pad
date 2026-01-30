@@ -110,7 +110,7 @@ export default function FileExplorer({
           style={{ top: context_menu.y, left: context_menu.x }}
           onClick={(e) => e.stopPropagation()}
         >
-          <button onClick={handle_delete}>Delete</button>
+          <button onClick={handle_delete}>🗑 Delete</button>
         </div>
       )}
     </div>

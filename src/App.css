@@ -2,6 +2,26 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--bg-void);
+  position: relative;
+}
+
+/* Subtle grid pattern overlay */
+.app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app > * {
+  position: relative;
+  z-index: 1;
 }
 
 .main-container {
@@ -15,25 +35,58 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--bg-surface);
 }
 
 .editor-content {
   flex: 1;
   display: flex;
   overflow: hidden;
+  background: var(--bg-void);
 }
 
 .output-area {
   height: 200px;
   min-height: 100px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border-default);
+  background: var(--bg-surface);
 }
 
 .empty-state {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #666;
+  gap: 16px;
+  color: var(--text-muted);
   font-size: 14px;
+  background: var(--bg-void);
+}
+
+.empty-state::before {
+  content: '{ }';
+  font-family: var(--font-mono);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--border-default);
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Glow effects for accents */
+.glow-primary {
+  box-shadow: 0 0 20px var(--accent-primary-glow);
+}
+
+.glow-success {
+  box-shadow: 0 0 20px var(--accent-success-glow);
+}
+
+.glow-error {
+  box-shadow: 0 0 20px var(--accent-error-glow);
 }

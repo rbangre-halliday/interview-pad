@@ -43,11 +43,11 @@ export default function Toolbar({
         </button>
         {can_run && (
           <button
-            className="toolbar-button primary"
+            className={`toolbar-button primary ${is_running ? 'loading' : ''}`}
             onClick={on_run}
             disabled={is_running}
           >
-            {is_running ? 'Running...' : 'Run'}
+            {is_running ? 'Running...' : '▶ Run'}
           </button>
         )}
       </div>

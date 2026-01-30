@@ -2,4 +2,34 @@
   flex: 1;
   height: 100%;
   min-width: 0;
+  background: var(--bg-void);
+  position: relative;
+}
+
+/* Override Monaco editor background to match theme */
+.editor-container .monaco-editor,
+.editor-container .monaco-editor .margin,
+.editor-container .monaco-editor-background,
+.editor-container .monaco-editor .inputarea.ime-input {
+  background-color: var(--bg-void) !important;
+}
+
+/* Line numbers styling */
+.editor-container .monaco-editor .line-numbers {
+  color: var(--text-muted) !important;
+}
+
+/* Selection */
+.editor-container .monaco-editor .selected-text {
+  background: rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Scrollbar customization */
+.editor-container .monaco-editor .scrollbar .slider {
+  background: var(--border-default) !important;
+  border-radius: 4px !important;
+}
+
+.editor-container .monaco-editor .scrollbar .slider:hover {
+  background: var(--text-muted) !important;
 }

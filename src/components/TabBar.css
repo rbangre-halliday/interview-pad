@@ -1,42 +1,71 @@
 .tab-bar {
   display: flex;
-  background: #252526;
-  border-bottom: 1px solid #333;
-  min-height: 35px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  min-height: 42px;
   overflow-x: auto;
+  padding: 0 8px;
+  gap: 4px;
+  align-items: flex-end;
 }
 
 .tab-bar::-webkit-scrollbar {
-  height: 3px;
+  height: 2px;
 }
 
 .tab-bar::-webkit-scrollbar-thumb {
-  background: #444;
+  background: var(--border-default);
+  border-radius: 1px;
 }
 
 .tab {
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  min-width: 100px;
+  padding: 0 16px;
+  min-width: 120px;
   max-width: 200px;
-  height: 35px;
-  background: #2d2d2d;
-  border-right: 1px solid #252526;
+  height: 36px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   cursor: pointer;
-  font-size: 13px;
-  color: #888;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--accent-primary);
+  transition: width var(--transition-normal);
+  border-radius: 2px 2px 0 0;
 }
 
 .tab:hover {
-  background: #323232;
+  color: var(--text-secondary);
+  background: var(--bg-hover);
 }
 
 .tab.active {
-  background: #1e1e1e;
-  color: #fff;
-  border-bottom: 1px solid #1e1e1e;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  border-bottom-color: var(--bg-void);
   margin-bottom: -1px;
+}
+
+.tab.active::after {
+  width: 40%;
 }
 
 .tab-name {
@@ -44,26 +73,30 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .tab-close {
   margin-left: 8px;
   background: none;
   border: none;
-  color: #888;
-  font-size: 16px;
+  color: var(--text-muted);
+  font-size: 14px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 2px 4px;
   line-height: 1;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-sm);
 }
 
 .tab:hover .tab-close,
 .tab.active .tab-close {
-  opacity: 1;
+  opacity: 0.6;
 }
 
 .tab-close:hover {
-  color: #fff;
+  opacity: 1 !important;
+  color: var(--accent-error);
+  background: rgba(244, 63, 94, 0.1);
 }

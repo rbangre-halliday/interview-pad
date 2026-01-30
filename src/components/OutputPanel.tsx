@@ -9,7 +9,12 @@ interface OutputPanelProps {
 export default function OutputPanel({ result, is_running }: OutputPanelProps) {
   const render_content = () => {
     if (is_running) {
-      return <div className="output-message">Running...</div>
+      return (
+        <div className="output-loading">
+          <div className="output-loading-spinner" />
+          <span>Executing code...</span>
+        </div>
+      )
     }
 
     if (!result) {
