@@ -1,0 +1,82 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #333;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.toolbar-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.toolbar-room {
+  font-size: 13px;
+  color: #888;
+  padding: 4px 10px;
+  background: #1e1e1e;
+  border-radius: 4px;
+  font-family: 'Menlo', 'Monaco', monospace;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #1e1e1e;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.toolbar-select:focus {
+  outline: none;
+  border-color: #0078d4;
+}
+
+.toolbar-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar-button.primary {
+  background: #0078d4;
+  color: #fff;
+}
+
+.toolbar-button.primary:hover:not(:disabled) {
+  background: #1084d8;
+}
+
+.toolbar-button.secondary {
+  background: #3c3c3c;
+  color: #fff;
+}
+
+.toolbar-button.secondary:hover:not(:disabled) {
+  background: #4a4a4a;
+}

@@ -1,0 +1,120 @@
+.end-session-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #dc3545;
+  background: transparent;
+  color: #dc3545;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.end-session-button:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #2d2d2d;
+  border-radius: 12px;
+  padding: 24px;
+  width: 400px;
+  max-width: 90vw;
+}
+
+.modal h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.modal p {
+  margin: 0 0 20px;
+  color: #888;
+  font-size: 14px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #1e1e1e;
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.modal input:focus {
+  outline: none;
+  border-color: #0078d4;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-button.primary {
+  background: #dc3545;
+  color: #fff;
+}
+
+.modal-button.primary:hover:not(:disabled) {
+  background: #e04555;
+}
+
+.modal-button.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-button.secondary {
+  background: #3c3c3c;
+  color: #fff;
+}
+
+.modal-button.secondary:hover {
+  background: #4a4a4a;
+}
+
+.status-message {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.status-message.success {
+  background: #1e3a2f;
+  color: #4ec9b0;
+}
+
+.status-message.error {
+  background: #3a1e1e;
+  color: #f48771;
+}

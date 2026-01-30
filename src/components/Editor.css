@@ -1,0 +1,14 @@
+.editor-container {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border-right: 1px solid #333;
+}
+
+@media (max-width: 900px) {
+  .editor-container {
+    border-right: none;
+    border-bottom: 1px solid #333;
+    height: 60%;
+  }
+}
