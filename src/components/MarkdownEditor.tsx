@@ -103,6 +103,8 @@ export default function MarkdownEditor({ ytext, provider, synced }: MarkdownEdit
 
   useEffect(() => {
     if (!ytext) return
+    // Set initial content immediately when ytext becomes available
+    set_content(ytext.toString())
     const update_preview = () => set_content(ytext.toString())
     ytext.observe(update_preview)
     return () => ytext.unobserve(update_preview)

@@ -35,7 +35,7 @@ function get_color_for_role(role: string): string {
   return ROLE_COLORS[role] || FALLBACK_COLORS[Math.floor(Math.random() * FALLBACK_COLORS.length)]
 }
 
-const DEFAULT_README = `# Interview Problem
+const DEFAULT_QUESTION = `# Interview Problem
 
 ## Description
 Describe the problem here...
@@ -195,13 +195,13 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
         const file_list_json = meta.get('files')
         if (!file_list_json) {
           // Initialize default files
-          const default_files = ['README.md', 'solution.py']
+          const default_files = ['question.md', 'solution.py']
           meta.set('files', JSON.stringify(default_files))
 
           // Initialize file contents
-          const readme_text = doc.getText('file:README.md')
-          if (readme_text.length === 0) {
-            readme_text.insert(0, DEFAULT_README)
+          const question_text = doc.getText('file:question.md')
+          if (question_text.length === 0) {
+            question_text.insert(0, DEFAULT_QUESTION)
           }
 
           const solution_text = doc.getText('file:solution.py')
