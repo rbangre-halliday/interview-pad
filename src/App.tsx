@@ -5,6 +5,7 @@ import FileExplorer from './components/FileExplorer'
 import TabBar from './components/TabBar'
 import Editor from './components/Editor'
 import MarkdownEditor from './components/MarkdownEditor'
+import Whiteboard from './components/Whiteboard'
 import OutputPanel from './components/OutputPanel'
 import Toolbar, { LANGUAGES, LanguageOption } from './components/Toolbar'
 import { useFileSystem, get_piston_language } from './hooks/useFileSystem'
@@ -151,6 +152,7 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
     users,
     current_user,
     get_file_content,
+    get_whiteboard_data,
     create_file,
     delete_file,
     set_output,
@@ -302,10 +304,30 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
   }, [output_height])
 
   const render_editor = () => {
-    if (!active_file || !active_ytext) {
+    if (!active_file) {
       return (
         <div className="empty-state">
           <p>Select a file to edit</p>
+        </div>
+      )
+    }
+
+    if (active_file_info?.type === 'whiteboard') {
+      const ymap = get_whiteboard_data(active_file)
+      return (
+        <Whiteboard
+          key={active_file}
+          ymap={ymap}
+          provider={provider}
+          synced={synced}
+        />
+      )
+    }
+
+    if (!active_ytext) {
+      return (
+        <div className="empty-state">
+          <p>Loading...</p>
         </div>
       )
     }

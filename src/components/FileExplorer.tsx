@@ -12,6 +12,7 @@ interface FileExplorerProps {
 
 function get_file_icon(file: FileInfo): string {
   if (file.type === 'markdown') return '📄'
+  if (file.type === 'whiteboard') return '🎨'
   if (file.language === 'python') return '🐍'
   if (file.language === 'javascript' || file.language === 'typescript') return '📜'
   if (file.language === 'java') return '☕'

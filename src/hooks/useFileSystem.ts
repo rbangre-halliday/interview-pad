@@ -6,7 +6,7 @@ const PARTYKIT_HOST = import.meta.env.VITE_PARTYKIT_HOST || '127.0.0.1:1999'
 
 export interface FileInfo {
   name: string
-  type: 'code' | 'markdown' | 'text'
+  type: 'code' | 'markdown' | 'text' | 'whiteboard'
   language?: string
 }
 
@@ -59,9 +59,10 @@ if __name__ == "__main__":
     solution()
 `
 
-function get_file_type(filename: string): 'code' | 'markdown' | 'text' {
+function get_file_type(filename: string): 'code' | 'markdown' | 'text' | 'whiteboard' {
   const ext = filename.split('.').pop()?.toLowerCase()
   if (ext === 'md' || ext === 'markdown') return 'markdown'
+  if (ext === 'wb') return 'whiteboard'
   if (['py', 'js', 'ts', 'java', 'c', 'cpp', 'go', 'rs'].includes(ext || '')) return 'code'
   return 'text'
 }
@@ -193,10 +194,25 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
 
       if (is_synced) {
         const file_list_json = meta.get('files')
-        // Initialize if no files exist or files array is empty
-        if (!file_list_json || file_list_json === '[]') {
+        console.log('File list from meta:', file_list_json)
+
+        // Parse and check if we need to initialize
+        let needs_init = false
+        if (!file_list_json) {
+          needs_init = true
+        } else {
+          try {
+            const parsed = JSON.parse(file_list_json)
+            needs_init = !Array.isArray(parsed) || parsed.length === 0
+          } catch {
+            needs_init = true
+          }
+        }
+
+        if (needs_init) {
+          console.log('Initializing default files...')
           // Initialize default files
-          const default_files = ['question.md', 'solution.py']
+          const default_files = ['question.md', 'solution.py', 'whiteboard.wb']
           meta.set('files', JSON.stringify(default_files))
 
           // Initialize file contents
@@ -208,6 +224,12 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
           const solution_text = doc.getText('file:solution.py')
           if (solution_text.length === 0) {
             solution_text.insert(0, DEFAULT_SOLUTION)
+          }
+
+          // Initialize whiteboard with empty elements
+          const whiteboard_map = doc.getMap<string>('whiteboard:whiteboard.wb')
+          if (!whiteboard_map.get('elements')) {
+            whiteboard_map.set('elements', '[]')
           }
         }
         update_state()
@@ -226,6 +248,11 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
     const ytext = doc_ref.current.getText(`file:${filename}`)
     console.log(`get_file_content(${filename}): length=${ytext.length}, content="${ytext.toString().substring(0, 30)}..."`)
     return ytext
+  }, [])
+
+  const get_whiteboard_data = useCallback((filename: string): Y.Map<string> | null => {
+    if (!doc_ref.current) return null
+    return doc_ref.current.getMap<string>(`whiteboard:${filename}`)
   }, [])
 
   const create_file = useCallback((filename: string, content: string = '') => {
@@ -291,6 +318,7 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
     users,
     current_user,
     get_file_content,
+    get_whiteboard_data,
     create_file,
     delete_file,
     rename_file,
