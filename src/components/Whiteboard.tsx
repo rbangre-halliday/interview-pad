@@ -316,11 +316,6 @@ export default function Whiteboard({ ymap, provider, synced }: WhiteboardProps) 
 
         ctx.font = `500 ${el.fontSize}px system-ui, -apple-system, sans-serif`
         const metrics = ctx.measureText(el.text)
-        const padding = 6
-        const box_x = el.position.x - padding
-        const box_y = el.position.y - el.fontSize - padding + 4
-        const box_w = metrics.width + padding * 2
-        const box_h = el.fontSize + padding * 2
 
         // Selection indicator only when selected (subtle underline)
         if (is_selected) {
@@ -449,14 +444,6 @@ export default function Whiteboard({ ymap, provider, synced }: WhiteboardProps) 
     const screen_x = client_x - rect.left
     const screen_y = client_y - rect.top
     return screen_to_canvas(screen_x, screen_y)
-  }
-
-  const get_screen_point = (e: React.MouseEvent | React.TouchEvent): Point => {
-    const rect = canvas_ref.current?.getBoundingClientRect()
-    if (!rect) return { x: 0, y: 0 }
-    const client_x = 'touches' in e ? e.touches[0]?.clientX ?? 0 : e.clientX
-    const client_y = 'touches' in e ? e.touches[0]?.clientY ?? 0 : e.clientY
-    return { x: client_x - rect.left, y: client_y - rect.top }
   }
 
   const find_element_at = (point: Point): WhiteboardElement | null => {
@@ -1266,7 +1253,7 @@ export default function Whiteboard({ ymap, provider, synced }: WhiteboardProps) 
         className={`whiteboard-canvas ${tool === 'select' ? 'select-mode' : ''} ${is_panning || space_pressed_ref.current ? 'panning' : ''} ${hover_handle ? `resize-${hover_handle}` : ''}`}
         onMouseDown={(e) => { handle_pan_start(e); if (!is_panning && !space_pressed_ref.current) handle_pointer_down(e) }}
         onMouseMove={(e) => { handle_pan_move(e); if (!is_panning) handle_pointer_move(e) }}
-        onMouseUp={(e) => { handle_pan_end(); handle_pointer_up() }}
+        onMouseUp={() => { handle_pan_end(); handle_pointer_up() }}
         onMouseLeave={() => { handle_pan_end(); handle_pointer_up() }}
         onDoubleClick={handle_double_click}
         onTouchStart={handle_pointer_down}
