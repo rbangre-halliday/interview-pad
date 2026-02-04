@@ -193,7 +193,8 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
 
       if (is_synced) {
         const file_list_json = meta.get('files')
-        if (!file_list_json) {
+        // Initialize if no files exist or files array is empty
+        if (!file_list_json || file_list_json === '[]') {
           // Initialize default files
           const default_files = ['question.md', 'solution.py']
           meta.set('files', JSON.stringify(default_files))

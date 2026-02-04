@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import UserPresence from './UserPresence'
+import ThemeToggle from './ThemeToggle'
 import { User } from '../hooks/useFileSystem'
 import './Toolbar.css'
 
@@ -63,6 +64,7 @@ export default function Toolbar({
         <UserPresence users={users} current_user={current_user} />
       </div>
       <div className="toolbar-right">
+        <ThemeToggle />
         <select
           className="toolbar-select language-select"
           value={current_language}

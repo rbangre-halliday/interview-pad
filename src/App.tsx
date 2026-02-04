@@ -160,8 +160,23 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
   const [active_file, set_active_file] = useState<string | null>(null)
   const [is_running, set_is_running] = useState(false)
   const [output_height, set_output_height] = useState(200)
+  const [initialized, set_initialized] = useState(false)
   const get_code_ref = useRef<(() => string) | null>(null)
   const resize_ref = useRef<{ start_y: number; start_height: number } | null>(null)
+
+  // Auto-open question.md when room first syncs with files
+  useEffect(() => {
+    if (initialized || !synced || files.length === 0) return
+    const question = files.find(f => f.name === 'question.md')
+    if (question) {
+      set_open_files([question.name])
+      set_active_file(question.name)
+    } else if (files.length > 0) {
+      set_open_files([files[0].name])
+      set_active_file(files[0].name)
+    }
+    set_initialized(true)
+  }, [synced, files, initialized])
 
   const active_file_info = files.find(f => f.name === active_file)
   const active_ytext = active_file ? get_file_content(active_file) : null
@@ -302,6 +317,7 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
           ytext={active_ytext}
           provider={provider}
           synced={synced}
+          is_candidate={user.role === 'candidate'}
         />
       )
     }

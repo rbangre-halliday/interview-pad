@@ -1,21 +1,57 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import MonacoEditor, { OnMount } from '@monaco-editor/react'
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { MonacoBinding } from 'y-monaco'
 import * as Y from 'yjs'
 import YPartyKitProvider from 'y-partykit/provider'
+import { useTheme } from '../hooks/useTheme'
 import './MarkdownEditor.css'
+
+function CollapsibleCode({ children, className }: { children: React.ReactNode; className?: string }) {
+  const [collapsed, set_collapsed] = useState(false)
+  const language = className?.replace('language-', '') || 'code'
+  const code_string = String(children).replace(/\n$/, '')
+  const line_count = code_string.split('\n').length
+
+  return (
+    <div className={`collapsible-code ${collapsed ? 'collapsed' : ''}`}>
+      <button className="code-toggle" onClick={() => set_collapsed(!collapsed)}>
+        <span className="toggle-icon">{collapsed ? '▶' : '▼'}</span>
+        <span className="code-language">{language}</span>
+        <span className="code-lines">{line_count} lines</span>
+      </button>
+      {!collapsed && (
+        <pre className={className}>
+          <code>{children}</code>
+        </pre>
+      )}
+    </div>
+  )
+}
+
+const markdown_components: Components = {
+  code({ className, children, ...props }) {
+    const is_inline = !className && !String(children).includes('\n')
+    if (is_inline) {
+      return <code className="inline-code" {...props}>{children}</code>
+    }
+    return <CollapsibleCode className={className}>{children}</CollapsibleCode>
+  }
+}
 
 interface MarkdownEditorProps {
   ytext: Y.Text | null
   provider: YPartyKitProvider | null
   synced: boolean
+  is_candidate?: boolean
 }
 
-export default function MarkdownEditor({ ytext, provider, synced }: MarkdownEditorProps) {
+export default function MarkdownEditor({ ytext, provider, synced, is_candidate = false }: MarkdownEditorProps) {
+  const theme = useTheme()
   const [content, set_content] = useState('')
   const [editor_width, set_editor_width] = useState(35) // Editor takes 35% by default
+  const [editor_collapsed, set_editor_collapsed] = useState(is_candidate) // Collapsed by default for candidates
   const binding_ref = useRef<MonacoBinding | null>(null)
   const editor_ref = useRef<Parameters<OnMount>[0] | null>(null)
   const initialized_ref = useRef(false)
@@ -123,45 +159,49 @@ export default function MarkdownEditor({ ytext, provider, synced }: MarkdownEdit
   return (
     <div className="markdown-editor" ref={container_ref}>
       {/* Preview on left - takes remaining space */}
-      <div className="markdown-pane preview-pane" style={{ flex: `0 0 ${100 - editor_width}%` }}>
+      <div className="markdown-pane preview-pane" style={{ flex: editor_collapsed ? '1 1 auto' : `0 0 ${100 - editor_width}%` }}>
         <div className="pane-header">
           <span className="pane-icon">◉</span>
           Preview
         </div>
         <div className="markdown-preview">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdown_components}>{content}</ReactMarkdown>
         </div>
       </div>
 
-      {/* Resize handle */}
-      <div className="pane-resize-handle" onMouseDown={handle_resize_start}>
-        <div className="resize-grip" />
-      </div>
-
-      {/* Editor on right */}
-      <div className="markdown-pane editor-pane" style={{ flex: `0 0 ${editor_width}%` }}>
-        <div className="pane-header">
-          <span className="pane-icon">{ }</span>
-          Edit
+      {/* Resize handle - only show when editor is expanded */}
+      {!editor_collapsed && (
+        <div className="pane-resize-handle" onMouseDown={handle_resize_start}>
+          <div className="resize-grip" />
         </div>
-        <MonacoEditor
-          height="100%"
-          language="markdown"
-          theme="vs-dark"
-          onMount={handle_mount}
-          options={{
-            fontSize: 14,
-            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            padding: { top: 16, bottom: 16 },
-            lineNumbers: 'on',
-            automaticLayout: true,
-            tabSize: 2,
-            wordWrap: 'on',
-            renderLineHighlight: 'none',
-          }}
-        />
+      )}
+
+      {/* Editor on right - collapsible */}
+      <div className={`markdown-pane editor-pane ${editor_collapsed ? 'collapsed' : ''}`} style={{ flex: editor_collapsed ? '0 0 auto' : `0 0 ${editor_width}%` }}>
+        <button className="pane-header pane-toggle" onClick={() => set_editor_collapsed(!editor_collapsed)}>
+          <span className="toggle-icon">{editor_collapsed ? '◀' : '▶'}</span>
+          <span className="pane-label">Edit</span>
+        </button>
+        {!editor_collapsed && (
+          <MonacoEditor
+            height="100%"
+            language="markdown"
+            theme={theme === 'dark' ? 'vs-dark' : 'light'}
+            onMount={handle_mount}
+            options={{
+              fontSize: 14,
+              fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              padding: { top: 16, bottom: 16 },
+              lineNumbers: 'on',
+              automaticLayout: true,
+              tabSize: 2,
+              wordWrap: 'on',
+              renderLineHighlight: 'none',
+            }}
+          />
+        )}
       </div>
     </div>
   )

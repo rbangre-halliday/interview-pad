@@ -4,6 +4,7 @@ import { MonacoBinding } from 'y-monaco'
 import * as Y from 'yjs'
 import YPartyKitProvider from 'y-partykit/provider'
 import type * as Monaco from 'monaco-editor'
+import { useTheme } from '../hooks/useTheme'
 import './Editor.css'
 
 interface EditorProps {
@@ -24,6 +25,7 @@ interface RemoteCursor {
 }
 
 export default function Editor({ ytext, provider, synced, language, on_editor_ready }: EditorProps) {
+  const theme = useTheme()
   const binding_ref = useRef<MonacoBinding | null>(null)
   const editor_ref = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null)
   const monaco_ref = useRef<typeof Monaco | null>(null)
@@ -272,7 +274,7 @@ export default function Editor({ ytext, provider, synced, language, on_editor_re
       <MonacoEditor
         height="100%"
         language={language}
-        theme="vs-dark"
+        theme={theme === 'dark' ? 'vs-dark' : 'light'}
         onMount={handle_mount}
         options={{
           fontSize: 14,

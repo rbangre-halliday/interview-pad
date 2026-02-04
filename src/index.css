@@ -1,32 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Core palette */
-  --bg-void: #0a0a0f;
-  --bg-surface: #12121a;
-  --bg-elevated: #1a1a24;
-  --bg-hover: #222230;
-
-  /* Accent colors */
-  --accent-primary: #6366f1;
-  --accent-primary-glow: rgba(99, 102, 241, 0.4);
-  --accent-secondary: #22d3ee;
-  --accent-success: #10b981;
-  --accent-success-glow: rgba(16, 185, 129, 0.3);
-  --accent-error: #f43f5e;
-  --accent-error-glow: rgba(244, 63, 94, 0.3);
-  --accent-warning: #f59e0b;
-
-  /* Text colors */
-  --text-primary: #f4f4f5;
-  --text-secondary: #a1a1aa;
-  --text-muted: #52525b;
-
-  /* Border colors */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-focus: var(--accent-primary);
-
   /* Typography */
   --font-ui: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
@@ -40,6 +14,58 @@
   --transition-fast: 0.1s ease;
   --transition-normal: 0.2s ease;
   --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Accent colors (shared between themes) */
+  --accent-primary: #6366f1;
+  --accent-primary-glow: rgba(99, 102, 241, 0.4);
+  --accent-secondary: #0891b2;
+  --accent-success: #059669;
+  --accent-success-glow: rgba(5, 150, 105, 0.3);
+  --accent-error: #dc2626;
+  --accent-error-glow: rgba(220, 38, 38, 0.3);
+  --accent-warning: #d97706;
+}
+
+/* Dark theme (default) */
+[data-theme="dark"], :root:not([data-theme]) {
+  --bg-void: #0a0a0f;
+  --bg-surface: #12121a;
+  --bg-elevated: #1a1a24;
+  --bg-hover: #222230;
+
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #52525b;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-focus: var(--accent-primary);
+
+  --code-bg: #1e1e2e;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Light theme - "Paper & Ink" */
+[data-theme="light"] {
+  --bg-void: #f8f6f1;
+  --bg-surface: #fffef9;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f0ede5;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #525252;
+  --text-muted: #9ca3af;
+
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.12);
+  --border-focus: var(--accent-primary);
+
+  --code-bg: #f5f3ee;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+
+  /* Slightly adjusted accents for light bg */
+  --accent-primary: #4f46e5;
+  --accent-primary-glow: rgba(79, 70, 229, 0.2);
 }
 
 * {
