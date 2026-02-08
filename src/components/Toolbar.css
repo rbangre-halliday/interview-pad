@@ -213,3 +213,14 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.end-interview-btn {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.end-interview-btn:hover {
+  background: rgba(217, 119, 6, 0.2);
+  border-color: rgba(217, 119, 6, 0.4);
+}

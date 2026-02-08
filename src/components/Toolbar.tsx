@@ -29,6 +29,7 @@ interface ToolbarProps {
   current_user: User | null
   on_run: () => void
   on_language_change: (lang: LanguageOption) => void
+  on_end_interview?: () => void
   timer_duration: number
   timer_started_at: number | null
   timer_elapsed_before_pause: number
@@ -47,6 +48,7 @@ export default function Toolbar({
   current_user,
   on_run,
   on_language_change,
+  on_end_interview,
   timer_duration,
   timer_started_at,
   timer_elapsed_before_pause,
@@ -107,6 +109,14 @@ export default function Toolbar({
         >
           {copied ? 'Copied!' : 'Copy Link'}
         </button>
+        {on_end_interview && (
+          <button
+            className="toolbar-button end-interview-btn"
+            onClick={on_end_interview}
+          >
+            End Interview
+          </button>
+        )}
         {can_run && (
           <button
             className={`toolbar-button primary ${is_running ? 'loading' : ''}`}

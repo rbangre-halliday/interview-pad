@@ -1,8 +1,7 @@
 .file-explorer {
-  width: 220px;
-  min-width: 220px;
+  flex: 1;
+  min-height: 0;
   background: var(--bg-surface);
-  border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   user-select: none;

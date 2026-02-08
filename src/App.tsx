@@ -8,6 +8,8 @@ import MarkdownEditor from './components/MarkdownEditor'
 import Whiteboard from './components/Whiteboard'
 import OutputPanel from './components/OutputPanel'
 import Toolbar, { LANGUAGES, LanguageOption } from './components/Toolbar'
+import InterviewerNotes from './components/InterviewerNotes'
+import EndInterviewModal from './components/EndInterviewModal'
 import { useFileSystem, get_piston_language } from './hooks/useFileSystem'
 import { executeCode, ExecutionResult } from './lib/piston'
 import './App.css'
@@ -170,6 +172,7 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
   const [is_running, set_is_running] = useState(false)
   const [output_height, set_output_height] = useState(200)
   const [initialized, set_initialized] = useState(false)
+  const [show_end_modal, set_show_end_modal] = useState(false)
   const get_code_ref = useRef<(() => string) | null>(null)
   const resize_ref = useRef<{ start_y: number; start_height: number } | null>(null)
 
@@ -374,6 +377,7 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
         current_user={current_user}
         on_run={handle_run}
         on_language_change={handle_language_change}
+        on_end_interview={user.role === 'interviewer' ? () => set_show_end_modal(true) : undefined}
         timer_duration={timer_duration}
         timer_started_at={timer_started_at}
         timer_elapsed_before_pause={timer_elapsed_before_pause}
@@ -383,13 +387,18 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
         on_timer_set_duration={timer_set_duration}
       />
       <div className="main-container">
-        <FileExplorer
-          files={files}
-          active_file={active_file}
-          on_file_select={handle_file_select}
-          on_file_create={handle_file_create}
-          on_file_delete={handle_file_delete}
-        />
+        <div className="sidebar">
+          <FileExplorer
+            files={files}
+            active_file={active_file}
+            on_file_select={handle_file_select}
+            on_file_create={handle_file_create}
+            on_file_delete={handle_file_delete}
+          />
+          {user.role === 'interviewer' && (
+            <InterviewerNotes room_id={room_id} />
+          )}
+        </div>
         <div className="editor-area">
           <TabBar
             open_files={open_files}
@@ -410,6 +419,16 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
           )}
         </div>
       </div>
+      {show_end_modal && (
+        <EndInterviewModal
+          room_id={room_id}
+          notes={localStorage.getItem(`interview-notes-${room_id}`) || ''}
+          code={get_file_content(current_solution.filename)?.toString() || ''}
+          language={current_solution.language}
+          candidate_name={users.find(u => u.role === 'candidate')?.name || ''}
+          on_close={() => set_show_end_modal(false)}
+        />
+      )}
     </div>
   )
 }

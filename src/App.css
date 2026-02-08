@@ -19,7 +19,8 @@
   z-index: 0;
 }
 
-.app > * {
+.app > .toolbar,
+.app > .main-container {
   position: relative;
   z-index: 1;
 }
@@ -32,6 +33,15 @@
   flex: 1;
   display: flex;
   overflow: hidden;
+}
+
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
 }
 
 .editor-area {
