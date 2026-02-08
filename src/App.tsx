@@ -156,6 +156,13 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
     create_file,
     delete_file,
     set_output,
+    timer_duration,
+    timer_started_at,
+    timer_elapsed_before_pause,
+    timer_start,
+    timer_pause,
+    timer_reset,
+    timer_set_duration,
   } = useFileSystem(room_id, user.name, user.role)
 
   const [open_files, set_open_files] = useState<string[]>([])
@@ -367,6 +374,13 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
         current_user={current_user}
         on_run={handle_run}
         on_language_change={handle_language_change}
+        timer_duration={timer_duration}
+        timer_started_at={timer_started_at}
+        timer_elapsed_before_pause={timer_elapsed_before_pause}
+        on_timer_start={timer_start}
+        on_timer_pause={timer_pause}
+        on_timer_reset={timer_reset}
+        on_timer_set_duration={timer_set_duration}
       />
       <div className="main-container">
         <FileExplorer

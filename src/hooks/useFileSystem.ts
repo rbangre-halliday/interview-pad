@@ -105,6 +105,9 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
   const [users, set_users] = useState<User[]>([])
   const [current_user, set_current_user] = useState<User | null>(null)
   const [, force_update] = useState(0)
+  const [timer_duration, set_timer_duration_state] = useState(45 * 60 * 1000)
+  const [timer_started_at, set_timer_started_at_state] = useState<number | null>(null)
+  const [timer_elapsed_before_pause, set_timer_elapsed_state] = useState(0)
 
   const doc_ref = useRef<Y.Doc | null>(null)
   const provider_ref = useRef<YPartyKitProvider | null>(null)
@@ -183,6 +186,15 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
         set_files([])
       }
       set_output_state(meta.get('output') || null)
+
+      // Timer state
+      const t_dur = meta.get('timer_duration')
+      const t_started = meta.get('timer_started_at')
+      const t_elapsed = meta.get('timer_elapsed_before_pause')
+      set_timer_duration_state(t_dur ? parseInt(t_dur) : 45 * 60 * 1000)
+      set_timer_started_at_state(t_started ? parseInt(t_started) : null)
+      set_timer_elapsed_state(t_elapsed ? parseInt(t_elapsed) : 0)
+
       force_update(n => n + 1)
     }
 
@@ -310,6 +322,38 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
     meta.set('output', value || '')
   }, [])
 
+  const timer_start = useCallback(() => {
+    if (!doc_ref.current) return
+    const meta = doc_ref.current.getMap<string>('meta')
+    meta.set('timer_started_at', String(Date.now()))
+  }, [])
+
+  const timer_pause = useCallback(() => {
+    if (!doc_ref.current) return
+    const meta = doc_ref.current.getMap<string>('meta')
+    const started = meta.get('timer_started_at')
+    if (!started) return
+    const elapsed_so_far = Date.now() - parseInt(started)
+    const prev_elapsed = parseInt(meta.get('timer_elapsed_before_pause') || '0')
+    meta.set('timer_elapsed_before_pause', String(prev_elapsed + elapsed_so_far))
+    meta.set('timer_started_at', '')
+  }, [])
+
+  const timer_reset = useCallback(() => {
+    if (!doc_ref.current) return
+    const meta = doc_ref.current.getMap<string>('meta')
+    meta.set('timer_started_at', '')
+    meta.set('timer_elapsed_before_pause', '0')
+  }, [])
+
+  const timer_set_duration = useCallback((ms: number) => {
+    if (!doc_ref.current) return
+    const meta = doc_ref.current.getMap<string>('meta')
+    meta.set('timer_duration', String(ms))
+    meta.set('timer_started_at', '')
+    meta.set('timer_elapsed_before_pause', '0')
+  }, [])
+
   return {
     files,
     synced,
@@ -323,5 +367,12 @@ export function useFileSystem(room_id: string, user_name: string, user_role: 'in
     delete_file,
     rename_file,
     set_output,
+    timer_duration,
+    timer_started_at,
+    timer_elapsed_before_pause,
+    timer_start,
+    timer_pause,
+    timer_reset,
+    timer_set_duration,
   }
 }
