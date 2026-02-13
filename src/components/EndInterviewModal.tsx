@@ -55,11 +55,12 @@ export default function EndInterviewModal({
     set_error_msg('')
 
     const is_local = PARTYKIT_HOST.includes('localhost') || PARTYKIT_HOST.includes('127.0.0.1')
-    const protocol = is_local ? 'http' : 'https'
-    const path = is_local ? 'party' : 'parties/main'
+    const url = is_local
+      ? `http://${PARTYKIT_HOST}/party/${room_id}`
+      : '/api/email'
 
     try {
-      const res = await fetch(`${protocol}://${PARTYKIT_HOST}/${path}/${room_id}`, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), room_id, notes, code, language, candidate_name }),
