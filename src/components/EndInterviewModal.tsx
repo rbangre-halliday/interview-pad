@@ -58,7 +58,7 @@ export default function EndInterviewModal({
       ? 'http' : 'https'
 
     try {
-      const res = await fetch(`${protocol}://${PARTYKIT_HOST}/party/${room_id}`, {
+      const res = await fetch(`${protocol}://${PARTYKIT_HOST}/parties/main/${room_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), room_id, notes, code, language, candidate_name }),
