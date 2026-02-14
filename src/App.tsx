@@ -173,6 +173,7 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
   const [output_height, set_output_height] = useState(200)
   const [initialized, set_initialized] = useState(false)
   const [show_end_modal, set_show_end_modal] = useState(false)
+  const candidate_name_ref = useRef('')
   const get_code_ref = useRef<(() => string) | null>(null)
   const resize_ref = useRef<{ start_y: number; start_height: number } | null>(null)
 
@@ -189,6 +190,12 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
     }
     set_initialized(true)
   }, [synced, files, initialized])
+
+  // Remember candidate name so it persists after they disconnect
+  const candidate_user = users.find(u => u.role === 'candidate')
+  if (candidate_user?.name) {
+    candidate_name_ref.current = candidate_user.name
+  }
 
   const active_file_info = files.find(f => f.name === active_file)
   const active_ytext = active_file ? get_file_content(active_file) : null
@@ -425,7 +432,7 @@ function InterviewRoom({ room_id, user }: InterviewRoomProps) {
           notes={localStorage.getItem(`interview-notes-${room_id}`) || ''}
           code={get_file_content(current_solution.filename)?.toString() || ''}
           language={current_solution.language}
-          candidate_name={users.find(u => u.role === 'candidate')?.name || ''}
+          candidate_name={candidate_name_ref.current}
           on_close={() => set_show_end_modal(false)}
         />
       )}
