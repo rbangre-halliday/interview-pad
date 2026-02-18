@@ -1,4 +1,4 @@
-import { ExecutionResult } from '../lib/piston'
+import { ExecutionResult } from '../lib/executor'
 import './OutputPanel.css'
 
 interface OutputPanelProps {

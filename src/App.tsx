@@ -11,7 +11,7 @@ import Toolbar, { LANGUAGES, LanguageOption } from './components/Toolbar'
 import InterviewerNotes from './components/InterviewerNotes'
 import EndInterviewModal from './components/EndInterviewModal'
 import { useFileSystem, get_piston_language } from './hooks/useFileSystem'
-import { executeCode, ExecutionResult } from './lib/piston'
+import { executeCode, ExecutionResult } from './lib/executor'
 import './App.css'
 
 interface StoredUser {
